@@ -1,6 +1,11 @@
 library IEEE;
 use ieee.std_logic_1164.all;
 
+-- VHDL code to blink an LED at four different frequencies
+--   based on a 25 MHz clock
+-- This example comes from nandland.com (https://www.nandland.com/vhdl/tutorials/tutorial-your-first-vhdl-program-part1.html)
+
+
 entity led_blinker is 
 	port ( 
 		i_clock : in std_logic;
