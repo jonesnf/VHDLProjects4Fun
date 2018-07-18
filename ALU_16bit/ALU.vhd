@@ -25,8 +25,8 @@ use ieee.numeric_std.all;
 
 entity ALU is 
 	port (
-		i_abus   : in std_logic_vector(15 downto 0);
-		i_bbus   : in std_logic_vector(15 downto 0);
+		i_abus   : in std_logic_vector(15 downto 0); --unsigned integers
+		i_bbus   : in std_logic_vector(15 downto 0); --unsigned integers
 		i_aluctl : in std_logic_vector(3 downto 0);
 		o_aluout : out std_logic_vector(15 downto 0); 
 		o_carry  : out std_logic -- carry flag
