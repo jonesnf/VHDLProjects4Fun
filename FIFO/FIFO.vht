@@ -21,9 +21,10 @@ architecture testbench of FIFO_tb is
 	signal tb_WRITE_DATA : std_logic_vector(7 downto 0) := x"00";
    signal tb_READ_EN    : std_logic := '0';
    signal tb_CLK        : std_logic := '0';
-   signal tb_RESET      : std_logic := '0';
+   signal tb_RESET      : std_logic := '1';
    signal tb_READ_DATA  : std_logic_vector(7 downto 0);
    signal tb_FULL       : std_logic;
+	signal tb_WRDCNT     : natural range 0 to 32 := 0;
    signal tb_EMPTY      : std_logic;
 
 -- Create component
@@ -60,7 +61,7 @@ begin
 			o_empty      => tb_EMPTY
 		);
 
--- create test
+-- clk @ 10 MHz
 	clk_gen : process is
 	begin 
 		wait for 50 ns; 
@@ -71,28 +72,29 @@ begin
 	begin
 	   wait for 100 ns;
 	   -- I made reset active low so keep it high
-	   tb_RESET      <= '1';		
 		tb_WRITE_DATA <= x"BB";
-		wait for 100 ns;
-		
-		tb_READ_EN   <= '0';
+		tb_READ_EN    <= '0';
 		tb_WRITE_EN   <= '1';
-		wait for 100 ns;
-		
-		tb_WRITE_EN   <= '1'; 
-		tb_WRITE_DATA <= x"EE";
 		wait for 100 ns;
 		
 		tb_WRITE_EN <= '0';
-		tb_READ_EN  <= '1';
 		wait for 100 ns;
 		
+		tb_WRITE_DATA <= x"EE";
 		tb_WRITE_EN   <= '1';
+		wait for 100 ns;
+		
 		tb_WRITE_DATA <= x"FF";
 		wait for 100 ns;
 		
 		tb_WRITE_EN <= '0';
 		tb_READ_EN  <= '1';
-		wait;		
+		wait for 100 ns;
+		
+		tb_READ_EN <= '0';
+		wait for 100 ns;
+		
+		tb_READ_EN <= '1';
+		wait;
 	end process test;
 end testbench;

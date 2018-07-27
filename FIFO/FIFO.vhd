@@ -33,6 +33,7 @@ entity FIFO is
 	);
 end FIFO;
 	
+-- TODO: should add ASSERT statements for sim purposes to check fro w=1 & r=1
 architecture fifo_behave of FIFO is 
 	type t_FIFO is array ( 0 to g_depth-1 ) of std_logic_vector( g_width-1 downto 0 );
 	
@@ -44,6 +45,10 @@ architecture fifo_behave of FIFO is
 	signal full     : std_logic := '0';
 	signal empty    : std_logic := '1';
 begin 
+   -- have to put wr_case outside of process
+	--   otherwise it will take additional clk cycle to update
+	-- (don't forget that process is only sensitive to clock)
+	wr_case <= i_write_en & i_read_en;
 	control : process(i_clk)
 	begin
 		if rising_edge(i_clk) then 
@@ -53,33 +58,32 @@ begin
 				w_index  <= 0;
 				r_index  <= 0;
 			else 
-				wr_case <= i_write_en & i_read_en;
-				case wr_case is
+			  case wr_case is
 					-- case w=0, r=1 : read from FIFO if not empty
-					when "01" =>
-						if empty = '0' then 
+					when "01" =>	 
+						 if empty = '0' then
 							word_cnt <= word_cnt - 1;
-							if r_index <= g_depth - 1 then 
+							if r_index = g_depth - 1 then
 								r_index <= 0;
-							else 
+							else
 								r_index <= r_index + 1;
 							end if;
-						end if;
+						 end if;
 					-- case w=1, r=0 : write to FIFO if not full
-					when "10" =>
-						if full = '0' then 
+					when "10" =>						 
+						 if full = '0' then
 							word_cnt <= word_cnt + 1;
-							if w_index = g_depth - 1 then 
+							if w_index = g_depth - 1 then
 								w_index <= 0;
-							else 
+							else
 								w_index <= w_index + 1;
 							end if;
 							FIFO(w_index) <= i_write_data;
-						end if;
+						 end if;
 					-- default : do nothing
 					when others =>
-						null;
-				end case;
+						 null;
+			  end case;										
 			end if; -- reset check
 		end if;    -- clk
 	end process control;
